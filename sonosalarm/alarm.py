@@ -12,17 +12,13 @@ class Alarm():
 
     def __init__(self,config):
         self.__config = config
-        self.players = sonosalarm.discovery.Discover()
-
         self.loadConfig()
-
-
+        self.players = sonosalarm.discovery.Discover(self.config.get('zone_ip'))
+        self.players.selectZone(self.config['zone'])
 
     def loadConfig(self):
         with open(self.__config) as f:
             self.config = yaml.safe_load(f.read())
-
-        self.players.selectZone(self.config['zone'])
 
     def saveSettings(self):
         """
@@ -41,9 +37,9 @@ class Alarm():
             z.volume = settings['volume'][z._uid]
 
         # Set queue position
-        self.players.groupMaster.play_from_queue(settings['current_queue_position'])
-
-        if settings['current_transport_state'] != 'PLAYING':
+        if settings['current_playing_state'] == 'PLAYING':
+            self.players.groupMaster.play_from_queue(settings['current_queue_position'])
+        elif self.players.groupMaster.get_current_transport_info()['current_transport_state'] == 'PLAYING':
             self.players.groupMaster.pause()
 
     def play(self):

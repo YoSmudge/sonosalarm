@@ -1,6 +1,7 @@
 import soco
 from texttable import Texttable
 import sys
+import logging
 
 
 class Discover(object):
@@ -10,12 +11,15 @@ class Discover(object):
 
     _zones = None
 
+    def __init__(self,zone_ip=None):
+        self.__zone_ip = zone_ip
+
     def printZones(self):
         t = Texttable()
-        t.add_row(['Zone Name', 'UID', 'Group', 'Current Volume'])
+        t.add_row(['Zone Name', 'UID', 'Group', 'IP', 'Current Volume'])
 
         for z in self.zones:
-            t.add_row([z.player_name, z.uid, z.group.coordinator.player_name, z.volume])
+            t.add_row([z.player_name, z.uid, z.group.coordinator.player_name, z.ip_address, z.volume])
 
         sys.stdout.write(t.draw())
         sys.stdout.write("\n")
@@ -36,8 +40,12 @@ class Discover(object):
 
     @property
     def zones(self):
-        if not self._zones:
-            self._zones = soco.discover(timeout=5)
+        if not self.__zone_ip:
+            if not self._zones:
+                self._zones = soco.discover(timeout=5)
+        else:
+            logging.info("Discovering with custom IP")
+            self._zones = [soco.SoCo(self.__zone_ip)]
         return self._zones
 
     @property
