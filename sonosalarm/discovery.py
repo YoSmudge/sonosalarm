@@ -35,7 +35,8 @@ class Discover(object):
             raise Exception("Zone named %s is not found!" % (zoneName))
 
         if self.__selectedZone.group.coordinator != self.__selectedZone:
-            raise Exception("Zone %s is part of a group (%s). Target zone should be the coordinator node" % (self.__selectedZone.playerName, self.__selectedZone.group.coordinator.player_name))
+            self.__selectedZone = self.__selectedZone.group.coordinator
+            logging.warning("Zone %s is part of a group (%s). Target zone should be the coordinator node" % (self.__selectedZone.player_name, self.__selectedZone.group.coordinator.player_name))
 
 
     @property

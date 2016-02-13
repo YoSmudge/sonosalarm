@@ -3,3 +3,6 @@ ENV/
 build/
 dist/
 __pycache__/
+configs/
+.DS_Store
+*.pyc
